@@ -2,24 +2,26 @@ defmodule ScoFileWatcher.Fw do
   use GenServer
   require Logger
 
-  @initial_wait 1000
-  @period 1000 * 1
-
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, [], opts)
   end
 
   def init(state) do
-    Process.send_after(self(), :work, @initial_wait)
+    :fs.start_link(:my_watcher, Path.absname("."))
+    :fs.subscribe(:my_watcher)
+    receive do
+      {_watcher_process, {:fs, :file_event}, {changedFile, type}} ->
+      IO.puts("#{changedFile} was updated: #{inspect type}")
+    end
     {:ok, state}
   end
 
-  def handle_info(:work, state) do
-    IO.puts("FileWatcher Stuff")
-    #deactivate_old_registrations(Timex.Date.now())
-    Process.send_after(self(), :work, @period)
+  def handle_info(atm, state) do
+    receive do
+      {_watcher_process, {:fs, :file_event}, {changedFile, _type}} ->
+      IO.puts("#{changedFile} was updated")
+      IO.puts("FileWatcher Stuff #{inspect atm} --- #{inspect state}")
+    end
     {:noreply, state}
   end
-
-
 end
