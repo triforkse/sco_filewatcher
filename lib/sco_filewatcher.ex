@@ -1,2 +1,0 @@
-defmodule ScoFilewatcher do
-end

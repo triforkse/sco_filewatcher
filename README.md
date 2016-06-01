@@ -1,6 +1,10 @@
 # ScoFilewatcher
 
-**TODO: Add description**
+##Vision
+
+The ScoFilewatcher should watch a directory including all subdirs (configurable)
+and report file changes to the sco server for further processing...
+
 
 ## Installation
 
@@ -17,4 +21,3 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
         def application do
           [applications: [:sco_filewatcher]]
         end
-
