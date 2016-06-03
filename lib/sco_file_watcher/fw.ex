@@ -11,7 +11,17 @@ defmodule ScoFileWatcher.Fw do
     :fs.subscribe(:my_watcher)
     receive do
       {_watcher_process, {:fs, :file_event}, {changedFile, type}} ->
-      IO.puts("#{changedFile} was updated: #{inspect type}")
+        IO.puts("#{changedFile} was updated: #{inspect type}")
+        # diff = Git.diff changedFile, "HEAD"
+
+
+        # IO.inspect(diff)
+        t = "file modificaton"
+        p = "put event payload here"
+        e = Poison.encode!(%{type: "filechange"})
+      # HTTPoison.post("localhost:4000/api/events", ["event[type]=#{t}\nevent[payload]=#{p}"], ["Content-Type": "application/x-www-form-urlencoded"])
+        HTTPoison.post("localhost:4000/api/events", "{\"event\": {\"type\":\"#{t}\", \"p\": \"#{p}\"}}", ["Content-Type": "application/json"])
+
     end
     {:ok, state}
   end
@@ -19,8 +29,11 @@ defmodule ScoFileWatcher.Fw do
   def handle_info(atm, state) do
     receive do
       {_watcher_process, {:fs, :file_event}, {changedFile, _type}} ->
-      IO.puts("#{changedFile} was updated")
-      IO.puts("FileWatcher Stuff #{inspect atm} --- #{inspect state}")
+        t = "file modificaton"
+        p = "some payload"
+        HTTPoison.post("localhost:4000/api/events", "{\"event\": {\"type\":\"#{t}\", \"p\": \"#{p}\"}}", ["Content-Type": "application/json"])
+        IO.puts("#{changedFile} was updated")
+        IO.puts("FileWatcher Stuff #{inspect atm} --- #{inspect state}")
     end
     {:noreply, state}
   end
